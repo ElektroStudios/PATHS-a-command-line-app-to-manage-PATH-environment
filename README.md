@@ -1,6 +1,6 @@
 # PATHS
 
-**PATHS** is a command-line interface application to manage (add, remove or clean) the Windows PATH environment variable.
+**PATHS** is a command-line interface application to manage (add, remove or clean) the Windows PATH and PATHEXT environment variables. variable.
 
 # Usage
 
