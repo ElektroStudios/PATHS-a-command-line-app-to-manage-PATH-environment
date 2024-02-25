@@ -1,121 +1,113 @@
-
-    :::::::::     ::: ::::::::::: :::    :::  ::::::::
-    :+:    :+:  :+: :+:   :+:     :+:    :+: :+:    :+:
-    +:+    +:+ +:+   +:+  +:+     +:+    +:+ +:+
-    +#++:++#+ +#++:++#++: +#+     +#++:++#++ +#++:++#++
-    +#+       +#+     +#+ +#+     +#+    +#+        +#+
-    #+#       #+#     #+# #+#     #+#    #+# #+#    #+#
-    ###       ###     ### ###     ###    ###  ########    v1.2
-
-
-    ------------------------------------------------------>>>>
-
-    Application Author....: Elektro
-    Author Skype..........: ElektroStudios
-    Author Email..........: ElektroStudios@ElHacker.Net
-
-    ------------------------------------------------------>>>>
+:::::::::     ::: ::::::::::: :::    :::  ::::::::
+:+:    :+:  :+: :+:   :+:     :+:    :+: :+:    :+:
++:+    +:+ +:+   +:+  +:+     +:+    +:+ +:+
++#++:++#+ +#++:++#++: +#+     +#++:++#++ +#++:++#++
++#+       +#+     +#+ +#+     +#+    +#+        +#+
+#+#       #+#     #+# #+#     #+#    #+# #+#    #+#
+###       ###     ### ###     ###    ###  ########    v1.4
 
 
-    [+] Syntax
+------------------------------------------------------>>>>
+Author   : ElektroStudios
+Copyright: Copyright © ElektroStudios 2015-2024
+Website  : https://github.com/ElektroStudios/PATHS-a-command-line-app-to-manage-PATH-environment
 
-        PATHS.exe /OPTIONS [DIRECTORY or EXTENSION or INDEX]
+------------------------------------------------------>>>>
 
+[+] Syntax
 
-    [+] Switches
+    PATHS.exe /OPTIONS [DIRECTORY PATH or FILE EXTENSION or ENTRY INDEX]
 
-        /L (or) /List    | Displays a list of the path entries.
-        /E (or) /Export  | Expports the paths to a Registry file.
-        /C (or) /Clean   | Clean duplicates and invalid entries.
-        /R (or) /Restore | Restore the paths to Windows defaults.
-                         |
-        /Add -Current    | Add an entry to the current user PATH.
-        /Add -Local      | Add an entry to the local machine PATH.
-        /A (or) /Add     | Add an entry to both PATH's.
-                         |
-        /Del -Current    | Delete an entry from current user PATH.
-        /Del -Local      | Delete an entry from local machine PATH.
-        /D (or) /Del     | Delete an entry from both PATH's.
-                         |
-        /AddExt -Current | Add an extension to current user PATHEXT.
-        /AddExt -Local   | Add an extension to local machine PATHEXT.
-        /AddExt          | Add an extension to both PATHEXT's.
-                         |
-        /DelExt -Current | Delete an extension from current user PATHEXT.
-        /DelExt -Local   | Delete an extension from local machine PATHEXT.
-        /DelExt          | Delete an extension from both PATHEXT's.
-                         |
-        /? (or) /Help    | Display this help.
+[+] Switches
 
+    /L (or) /List    | Lists the PATH entries.
+    /E (or) /Export  | Exports PATH and PATHEXT entries to a registry script file.
+    /C (or) /Clean   | Clean duplicates and missing directory paths in PATH and PATHEXT.
+    /R (or) /Restore | Restores the PATH entries to Windows defaults.
+                     |
+    /Add -User       | Adda a directory to current user's PATH.
+    /Add -Machine    | Adds a directory to local machine PATH.
+    /A (or) /Add     | Adds a directory to current user's and local machine PATHs.
+                     |
+    /Del -User       | Deletes a directory from current user's PATH.
+    /Del -Machine    | Deletes a directory from local machine PATH.
+    /D (or) /Del     | Deletes a directory from current user's and local machine PATHs.
+                     |
+    /AddExt -User    | Adds a file extension to current user's PATHEXT.
+    /AddExt -Machine | Adds a file extension to local machine PATHEXT.
+    /AddExt          | Adds a file extension to current user's and local machine PATHEXTs.
+                     |
+    /DelExt -User    | Deletes a file extension from current user's PATHEXT.
+    /DelExt -Machine | Deletes a file extension from local machine PATHEXT.
+    /DelExt          | Deletes a file extension from current user's and local machine PATHEXTs.
+                     |
+    /? (or) /Help    | Shows this help.
 
-    [+] Switch value types
+[+] Switch value types
 
-         You can see all the entry index numbers typing: PATHS.exe /List
+    Note: You can list all the entry indices using command: PATHS.exe /List
 
-        /Del -Current1 (Directory)
-        /Del -Current1 (Entry Index)
+    /Del -User       (Directory Path or Entry Index)
+    /Del -Machine    (Directory Path or Entry Index)
 
-        /Del -Local1   (Directory)
-        /Del -Local1   (Entry Index)
+    /AddExt -User    (File Extension)
+    /AddExt -Machine (File Extension)
 
-        /AddExt -Current1 (File extension)
-        /AddExt -Local1   (File extension)
+    /DelExt -User    (File Extension)
+    /DelExt -Machine (File Extension)
 
-        /DelExt -Current1 (File extension)
-        /DelExt -Local1   (File extension)
+[+] Usage examples
 
+    PATHS.exe /List
+    (Lists the entries of PATH and PATHEXT)
 
-    [+] Usage examples
+    PATHS.exe /Clean
+    (Clean duplicates and missing directory paths in PATH and PATHEXT)
 
-        PATHS.exe /List
+    PATHS.exe /Restore
+    (Restores the PATH and PATHEXT to Windows defaults)
 
-        PATHS.exe /Clean
+    PATHS.exe /Export "C:\Registry File.reg"
+    (Exports the PATH and PATHEXT entries to the specified registry script file)
 
-        PATHS.exe /Restore
+    PATHS.exe /Add -User "C:\Directory"
+    (Adds a directory with name "C:\Directory" to current user's PATH)
 
-        PATHS.exe /Export "C:\Registry File.reg"
-        (Exports the PATH and PATHEXT values to the target file)
+    PATHS.exe /Add -Machine "C:\Directory"
+    (Adds a directory with name "C:\Directory" to local machine PATH)
 
-        PATHS.exe /Add -Current "C:\Directory"
-        (Adds a new entry "C:\Directory" to Current User PATH)
+    PATHS.exe /Add "C:\Directory"
+    (Adds a directory with name "C:\Directory" to current user's and local machine PATHs)
 
-        PATHS.exe /Add -Local "C:\Directory"
-        (Adds a new entry "C:\Directory" to All Users PATH)
+    PATHS.exe /Del -User "C:\Directory"
+    (Deletes any directory with name "C:\Directory" from current user's PATH)
 
-        PATHS.exe /Add "C:\Directory"
-        (Adds a new entry "C:\Directory" to both PATH's)
+    PATHS.exe /Del -Machine "C:\Directory"
+    (Deletes any directory with name "C:\Directory" from local machine PATH)
 
-        PATHS.exe /Del -Current "C:\Directory"
-        (Deletes entries matching as "C:\Directory" from Current User PATH)
+    PATHS.exe /Del "C:\Directory"
+    (Deletes any directory with name "C:\Directory" from current user's and local machine PATHs)
 
-        PATHS.exe /Del -Local "C:\Directory"
-        (Deletes entries matching as "C:\Directory" from All Users PATH)
+    PATHS.exe /Del -User 5
+    (Deletes the entry with index 5 from current user's PATH)
 
-        PATHS.exe /Del "C:\Directory"
-        (Deletes entries matching as "C:\Directory" from both PATH's)
+    PATHS.exe /Del -Machine 5
+    (Deletes the entry with index 5 from local machine PATH)
 
-        PATHS.exe /Del -Current 5
-        (Deletes entry index 5 from Current User PATH)
+    PATHS.exe /AddExt -User ".test"
+    (Adds a file extension with name ".test" to current user's PATHEXT)
 
-        PATHS.exe /Del -Local 5
-        (Deletes the entry index 5 from All Users PATH)
+    PATHS.exe /AddExt -Machine ".test"
+    (Adds a file extension with name ".test" to local machine PATHEXT)
 
-        PATHS.exe /AddExt -Current ".hack"
-        (Adds a new ".hack" extension to Current User PATHEXT)
+    PATHS.exe /AddExt ".test"
+    (Adds a file extension with name ".test" to current user's and local machine PATHEXTs)
 
-        PATHS.exe /AddExt -Local ".hack"
-        (Adds a new ".hack" extension to All Users PATHEXT)
+    PATHS.exe /DelExt -User ".test"
+    (Deletes any file extension with name ".test" from current user's PATHEXT)
 
-        PATHS.exe /AddExt ".hack"
-        (Adds a new ".hack" extension to both PATHEXT's)
+    PATHS.exe /DelExt -Machine ".test"
+    (Deletes any file extension with name ".test" from local machine PATHEXT)
 
-        PATHS.exe /DelExt -Current ".hack"
-        (Deletes extensions matching as ".hack" from Current User PATHEXT)
-
-        PATHS.exe /DelExt -Local ".hack"
-        (Deletes extensions matching as ".hack" from All Users PATHEXT)
-
-        PATHS.exe /DelExt ".hack"
-        (Deletes extensions matching as ".hack" from both PATHEXT's)
-
-
+    PATHS.exe /DelExt ".test"
+    (Deletes any file extension with name ".test" from current user's and local machine PATHEXTs)

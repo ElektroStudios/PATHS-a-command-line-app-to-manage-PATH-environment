@@ -11,16 +11,16 @@ Imports System.Runtime.InteropServices
 ' Review the values of the assembly attributes
 
 <Assembly: AssemblyTitle("PATHS")>
-<Assembly: AssemblyDescription("Manages 'PATH' and 'PATHEXT' environment variables.")>
+<Assembly: AssemblyDescription("Command-line app to manage PATH and PATHEXT environment variables")>
 <Assembly: AssemblyCompany("ElektroStudios")>
 <Assembly: AssemblyProduct("PATHS")>
-<Assembly: AssemblyCopyright("© ElektroStudios 2015")>
+<Assembly: AssemblyCopyright("Copyright © ElektroStudios 2014-2024")>
 <Assembly: AssemblyTrademark("")> 
 
 <Assembly: ComVisible(False)> 
 
 'The following GUID is for the ID of the typelib if this project is exposed to COM
-<Assembly: Guid("5e28b3ba-1276-454d-b436-7d751f0404cf")> 
+<Assembly: Guid("5e28b3ba-1276-454d-b436-7d751f0404cf")>
 
 ' Version information for an assembly consists of the following four values:
 '
@@ -33,7 +33,7 @@ Imports System.Runtime.InteropServices
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("1.3.0.0")> 
-<Assembly: AssemblyFileVersion("1.3.0.0")> 
+<Assembly: AssemblyVersion("1.4.0.0")>
+<Assembly: AssemblyFileVersion("1.4.0.0")>
 
 <Assembly: NeutralResourcesLanguageAttribute("en")> 

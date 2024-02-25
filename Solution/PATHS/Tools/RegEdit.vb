@@ -578,9 +578,7 @@ Namespace Tools
                     Throw
 
                 Finally
-                    If reg IsNot Nothing Then
-                        reg.Close()
-                    End If
+                    reg?.Close()
 
                 End Try
 
@@ -658,9 +656,7 @@ Namespace Tools
                     Throw
 
                 Finally
-                    If reg IsNot Nothing Then
-                        reg.Close()
-                    End If
+                    reg?.Close()
 
                 End Try
 
@@ -735,9 +731,7 @@ Namespace Tools
                     Throw
 
                 Finally
-                    If reg IsNot Nothing Then
-                        reg.Close()
-                    End If
+                    reg?.Close()
 
                 End Try
 
@@ -761,7 +755,7 @@ Namespace Tools
         ''' Deletes a registry subkey.
         ''' </summary>
         ''' <typeparam name="T"></typeparam>
-        ''' <param name="regInfo">A <see cref="Regedit.RegInfo(of T)"/> instance containing the registry info.</param>
+        ''' <param name="regInfo">A <see cref="Regedit.RegInfo(Of T)"/> instance containing the registry info.</param>
         ''' <param name="throwOnMissingSubKey">If set to <c>true</c>, throws an exception on missing subkey.</param>
         Public Shared Sub DeleteSubKey(Of T)(ByVal regInfo As RegInfo(Of T),
                                              Optional ByVal throwOnMissingSubKey As Boolean = False)
@@ -811,9 +805,7 @@ Namespace Tools
                     Throw
 
                 Finally
-                    If reg IsNot Nothing Then
-                        reg.Close()
-                    End If
+                    reg?.Close()
 
                 End Try
 
@@ -887,9 +879,7 @@ Namespace Tools
                     Throw
 
                 Finally
-                    If reg IsNot Nothing Then
-                        reg.Close()
-                    End If
+                    reg?.Close()
 
                 End Try
 
@@ -915,7 +905,7 @@ Namespace Tools
         ''' Deletes a registry subkey.
         ''' </summary>
         ''' <typeparam name="T"></typeparam>
-        ''' <param name="regInfo">A <see cref="Regedit.RegInfo(of T)"/> instance containing the registry info.</param>
+        ''' <param name="regInfo">A <see cref="Regedit.RegInfo(Of T)"/> instance containing the registry info.</param>
         ''' <param name="throwOnMissingValue">If set to <c>true</c>, throws an exception on missing value.</param>
         Public Shared Sub DeleteValue(Of T)(ByVal regInfo As RegInfo(Of T),
                                             Optional ByVal throwOnMissingValue As Boolean = False)
@@ -963,9 +953,7 @@ Namespace Tools
                     Throw
 
                 Finally
-                    If reg IsNot Nothing Then
-                        reg.Close()
-                    End If
+                    reg?.Close()
 
                 End Try
 
@@ -994,7 +982,7 @@ Namespace Tools
         ''' Gets the data of a registry value.
         ''' </summary>
         ''' <typeparam name="T"></typeparam>
-        ''' <param name="regInfo">A <see cref="Regedit.RegInfo(of T)"/> instance containing the registry info.</param>
+        ''' <param name="regInfo">A <see cref="Regedit.RegInfo(Of T)"/> instance containing the registry info.</param>
         ''' <param name="registryValueOptions">The registry value options.</param>
         ''' <returns>The value data</returns>
         Public Shared Function GetValueData(Of T)(ByVal regInfo As RegInfo(Of T),
@@ -1043,7 +1031,7 @@ Namespace Tools
         ''' <summary>
         ''' Gets the data of a registry value.
         ''' </summary>
-        ''' <param name="regInfo">A <see cref="Regedit.RegInfo(of T)"/> instance containing the registry info.</param>
+        ''' <param name="regInfo">A <see cref="Regedit.RegInfo(Of T)"/> instance containing the registry info.</param>
         ''' <param name="registryValueOptions">The registry value options.</param>
         ''' <returns>The value data</returns>
         Public Shared Function GetValueData(ByVal regInfo As RegInfo,
@@ -1086,9 +1074,7 @@ Namespace Tools
                     Throw
 
                 Finally
-                    If reg IsNot Nothing Then
-                        reg.Close()
-                    End If
+                    reg?.Close()
 
                 End Try
             End If
@@ -1140,9 +1126,7 @@ Namespace Tools
                     Throw
 
                 Finally
-                    If reg IsNot Nothing Then
-                        reg.Close()
-                    End If
+                    reg?.Close()
 
                 End Try
             End If
@@ -1196,9 +1180,7 @@ Namespace Tools
                     Throw
 
                 Finally
-                    If reg IsNot Nothing Then
-                        reg.Close()
-                    End If
+                    reg?.Close()
 
                 End Try
             End If
@@ -1317,9 +1299,7 @@ Namespace Tools
                     Throw
 
                 Finally
-                    If reg IsNot Nothing Then
-                        reg.Close()
-                    End If
+                    reg?.Close()
 
                 End Try
 
@@ -1531,12 +1511,8 @@ Namespace Tools
                     Throw
 
                 Finally
-                    If sourceRegistryKey IsNot Nothing Then
-                        sourceRegistryKey.Close()
-                    End If
-                    If targetRegistryKey IsNot Nothing Then
-                        targetRegistryKey.Close()
-                    End If
+                    sourceRegistryKey?.Close()
+                    targetRegistryKey?.Close()
 
                 End Try
 
@@ -1608,12 +1584,8 @@ Namespace Tools
                 Throw
 
             Finally
-                If sourceRegistryKey IsNot Nothing Then
-                    sourceRegistryKey.Close()
-                End If
-                If targetRegistryKey IsNot Nothing Then
-                    targetRegistryKey.Close()
-                End If
+                sourceRegistryKey?.Close()
+                targetRegistryKey?.Close()
 
             End Try
 
@@ -1685,12 +1657,8 @@ Namespace Tools
                     Throw
 
                 Finally
-                    If sourceRegistryKey IsNot Nothing Then
-                        sourceRegistryKey.Close()
-                    End If
-                    If targetRegistryKey IsNot Nothing Then
-                        targetRegistryKey.Close()
-                    End If
+                    sourceRegistryKey?.Close()
+                    targetRegistryKey?.Close()
 
                 End Try
 
@@ -1741,12 +1709,8 @@ Namespace Tools
                 Throw
 
             Finally
-                If sourceRegistryKey IsNot Nothing Then
-                    sourceRegistryKey.Close()
-                End If
-                If targetRegistryKey IsNot Nothing Then
-                    targetRegistryKey.Close()
-                End If
+                sourceRegistryKey?.Close()
+                targetRegistryKey?.Close()
 
             End Try
 
@@ -1919,7 +1883,7 @@ Namespace Tools
                     Else ' not matchFullSubKeyName
                         If ignoreCase Then
                             Return (From registryPath As String In CollectSubKeys(reg, searchOption)
-                                   Where GetSubKeyPath(registryPath).
+                                    Where GetSubKeyPath(registryPath).
                                          Remove(0, subKeyPath.Length).
                                          ToLower.
                                          Contains(subKeyName.ToLower)
@@ -1931,7 +1895,7 @@ Namespace Tools
 
                         Else
                             Return (From registryPath As String In CollectSubKeys(reg, searchOption)
-                                   Where GetSubKeyPath(registryPath).
+                                    Where GetSubKeyPath(registryPath).
                                          Remove(0, subKeyPath.Length).
                                          Contains(subKeyName)
                                     Select New RegInfo With
@@ -1950,9 +1914,7 @@ Namespace Tools
                 Throw
 
             Finally
-                If reg IsNot Nothing Then
-                    reg.Close()
-                End If
+                reg?.Close()
 
             End Try
 
@@ -2014,22 +1976,22 @@ Namespace Tools
                     If matchFullValueName Then
 
                         If ignoreCase Then
-                            Return (From regInfo As reginfo In CollectValues(reg, searchOption)
+                            Return (From regInfo As RegInfo In CollectValues(reg, searchOption)
                                     Where regInfo.ValueName.ToLower.Equals(valueName.ToLower)).ToArray
 
                         Else
-                            Return (From regInfo As reginfo In CollectValues(reg, searchOption)
+                            Return (From regInfo As RegInfo In CollectValues(reg, searchOption)
                                     Where regInfo.ValueName.Equals(valueName)).ToArray
 
                         End If ' ignoreCase
 
                     Else ' not matchFullValueName
                         If ignoreCase Then
-                            Return (From regInfo As reginfo In CollectValues(reg, searchOption)
+                            Return (From regInfo As RegInfo In CollectValues(reg, searchOption)
                                     Where regInfo.ValueName.ToLower.Contains(valueName.ToLower)).ToArray
 
                         Else
-                            Return (From regInfo As reginfo In CollectValues(reg, searchOption)
+                            Return (From regInfo As RegInfo In CollectValues(reg, searchOption)
                                     Where regInfo.ValueName.Contains(valueName)).ToArray
 
                         End If ' ignoreCase
@@ -2042,9 +2004,7 @@ Namespace Tools
                 Throw
 
             Finally
-                If reg IsNot Nothing Then
-                    reg.Close()
-                End If
+                reg?.Close()
 
             End Try
 
@@ -2106,12 +2066,12 @@ Namespace Tools
                     If matchFullData Then
 
                         If ignoreCase Then
-                            Return (From regInfo As reginfo In CollectValueDatas(reg, searchOption).ToArray
+                            Return (From regInfo As RegInfo In CollectValueDatas(reg, searchOption).ToArray
                                     Where Not String.IsNullOrEmpty(regInfo.ValueData.ToString) AndAlso
                                           regInfo.ValueData.ToString.ToLower.Equals(valueData.ToLower))
 
                         Else
-                            Return (From regInfo As reginfo In CollectValueDatas(reg, searchOption).ToArray
+                            Return (From regInfo As RegInfo In CollectValueDatas(reg, searchOption).ToArray
                                     Where Not String.IsNullOrEmpty(regInfo.ValueData.ToString) AndAlso
                                           regInfo.ValueData.ToString.Equals(valueData))
 
@@ -2119,12 +2079,12 @@ Namespace Tools
 
                     Else ' not matchFullData
                         If ignoreCase Then
-                            Return (From regInfo As reginfo In CollectValueDatas(reg, searchOption).ToArray
+                            Return (From regInfo As RegInfo In CollectValueDatas(reg, searchOption).ToArray
                                     Where Not String.IsNullOrEmpty(regInfo.ValueData.ToString) AndAlso
                                           regInfo.ValueData.ToString.ToLower.Contains(valueData.ToLower))
 
                         Else
-                            Return (From regInfo As reginfo In CollectValueDatas(reg, searchOption).ToArray
+                            Return (From regInfo As RegInfo In CollectValueDatas(reg, searchOption).ToArray
                                     Where Not String.IsNullOrEmpty(regInfo.ValueData.ToString) AndAlso
                                           regInfo.ValueData.ToString.Contains(valueData))
 
@@ -2138,9 +2098,7 @@ Namespace Tools
                 Throw
 
             Finally
-                If reg IsNot Nothing Then
-                    reg.Close()
-                End If
+                reg?.Close()
 
             End Try
 

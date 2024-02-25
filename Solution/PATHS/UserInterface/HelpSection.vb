@@ -150,33 +150,23 @@ Namespace UserInterface
         Friend Shared ReadOnly ColorizedHelp As XElement =
     <Help>
 
-        <!-- Current process name -->
-        <!-- That means even when the user manually changes the executable name -->
-        <Process>*F07*<%= processName %>*-F*</Process>
-
         <!-- Application title -->
-        <Title>PATHS .:: By Elektro ::.</Title>
+        <Title>PATHS .:: By ElektroStudios ::.</Title>
 
         <!-- Application name -->
         <Name>*F07*PATHS*-F*</Name>
 
         <!-- Application author -->
-        <Author>*F07*Elektro*-F*</Author>
+        <Author>*F07*ElektroStudios*-F*</Author>
 
         <!-- Application version -->
-        <Version>*F07*1.3*-F*</Version>
+        <Version>*F07*1.4*-F*</Version>
 
         <!-- Copyright information -->
-        <Copyright>*F07*© Elektro Studios 2015*-F*</Copyright>
+        <Copyright>*F07*Copyright © ElektroStudios 2015-2024*-F*</Copyright>
 
         <!-- Website information -->
-        <Website>*F07*http://foro.elhacker.net/profiles/elektrohcker-u436313.html*-F*</Website>
-
-        <!-- Skype contact information -->
-        <Skype>*F07*ElektroStudios*-F*</Skype>
-
-        <!-- Email contact information -->
-        <Email>*F07*ElektroStudios@ElHacker.Net*-F*</Email>
+        <Website>*F07*https://github.com/ElektroStudios/PATHS-a-command-line-app-to-manage-PATH-environment*-F*</Website>
 
         <!-- Application Logotype -->
         <Logo>*F11*
@@ -186,65 +176,58 @@ Namespace UserInterface
     +#++:++#+ +#++:++#++: +#+     +#++:++#++ +#++:++#++ 
     +#+       +#+     +#+ +#+     +#+    +#+        +#+ 
     #+#       #+#     #+# #+#     #+#    #+# #+#    #+# 
-    ###       ###     ### ###     ###    ###  ########    *F07*v1.3
+    ###       ###     ### ###     ###    ###  ########    *F07*v1.4
     *-F*</Logo>
 
         <!-- Separator shape -->
         <Separator>
-    *F11*------------------------------------------------------*F14*>>>>*-F*
-    </Separator>
+    *F11*------------------------------------------------------*F14*>>>>*-F*</Separator>
 
         <!-- Application Syntax -->
         <Syntax>
     *F11*[+]*-F* *F14*Syntax*-F*
 
-        *F07*<%= processName %> *F10*/OPTIONS*-F* *F10*[*F07*DIRECTORY or EXTENSION or INDEX*F10*]*-F*
-    </Syntax>
+        *F07*<%= processName %> *F10*/OPTIONS*-F* *F10*[*F07*DIRECTORY PATH or FILE EXTENSION or ENTRY INDEX*F10*]*-F*</Syntax>
 
         <!-- Application Syntax (Additional Specifications) -->
         <SyntaxExtra>
     *F11*[+]*-F* *F14*Switches*-F*
 
-        *F10*/L *F08*(or)*F10* /List    *F08*| *F07*Displays a list of the path entries.*-F*
-        *F10*/E *F08*(or)*F10* /Export  *F08*| *F07*Expports the paths to a Registry file.*-F*
-        *F10*/C *F08*(or)*F10* /Clean   *F08*| *F07*Clean duplicates and invalid entries.*-F*
-        *F10*/R *F08*(or)*F10* /Restore *F08*| *F07*Restore the paths to Windows defaults.*-F*
+        *F10*/L *F08*(or)*F10* /List    *F08*| *F07*Lists the PATH entries.*-F*
+        *F10*/E *F08*(or)*F10* /Export  *F08*| *F07*Exports PATH and PATHEXT entries to a registry script file.*-F*
+        *F10*/C *F08*(or)*F10* /Clean   *F08*| *F07*Clean duplicates and missing directory paths in PATH and PATHEXT.*-F*
+        *F10*/R *F08*(or)*F10* /Restore *F08*| *F07*Restores the PATH entries to Windows defaults.*-F*
         *F10*   *F08*         *F10*     *F08*|
-        *F10*/Add -Current    *F08**F08**F08*| *F07*Add an entry to the current user PATH.*-F*
-        *F10*/Add -Local      *F08**F08**F08*| *F07*Add an entry to the local machine PATH.*-F*
-        *F10*/A *F08*(or)*F10* /Add     *F08*| *F07*Add an entry to both PATH's.*-F*
+        *F10*/Add -User       *F08**F08**F08*| *F07*Adda a directory to current user's PATH.*-F*
+        *F10*/Add -Machine    *F08**F08**F08*| *F07*Adds a directory to local machine PATH.*-F*
+        *F10*/A *F08*(or)*F10* /Add     *F08*| *F07*Adds a directory to current user's and local machine PATHs.*-F*
         *F10*   *F08*         *F10*     *F08*|
-        *F10*/Del -Current    *F08**F08**F08*| *F07*Delete an entry from current user PATH.*-F*
-        *F10*/Del -Local      *F08**F08**F08*| *F07*Delete an entry from local machine PATH.*-F*
-        *F10*/D *F08*(or)*F10* /Del     *F08*| *F07*Delete an entry from both PATH's.*-F*
+        *F10*/Del -User       *F08**F08**F08*| *F07*Deletes a directory from current user's PATH.*-F*
+        *F10*/Del -Machine    *F08**F08**F08*| *F07*Deletes a directory from local machine PATH.*-F*
+        *F10*/D *F08*(or)*F10* /Del     *F08*| *F07*Deletes a directory from current user's and local machine PATHs.*-F*
         *F10*   *F08*         *F10*     *F08*|
-        *F10*/AddExt -Current *F08**F08**F08*| *F07*Add an extension to current user PATHEXT.*-F*
-        *F10*/AddExt -Local   *F08**F08**F08*| *F07*Add an extension to local machine PATHEXT.*-F*
-        *F10*/AddExt*F08**F08*          *F08*| *F07*Add an extension to both PATHEXT's.*-F*
+        *F10*/AddExt -User    *F08**F08**F08*| *F07*Adds a file extension to current user's PATHEXT.*-F*
+        *F10*/AddExt -Machine *F08**F08**F08*| *F07*Adds a file extension to local machine PATHEXT.*-F*
+        *F10*/AddExt*F08**F08*          *F08*| *F07*Adds a file extension to current user's and local machine PATHEXTs.*-F*
         *F10*   *F08*         *F10*     *F08*|
-        *F10*/DelExt -Current *F08**F08**F08*| *F07*Delete an extension from current user PATHEXT.*-F*
-        *F10*/DelExt -Local   *F08**F08**F08*| *F07*Delete an extension from local machine PATHEXT.*-F*
-        *F10*/DelExt          *F08**F08**F08*| *F07*Delete an extension from both PATHEXT's.*-F*
+        *F10*/DelExt -User    *F08**F08**F08*| *F07*Deletes a file extension from current user's PATHEXT.*-F*
+        *F10*/DelExt -Machine *F08**F08**F08*| *F07*Deletes a file extension from local machine PATHEXT.*-F*
+        *F10*/DelExt          *F08**F08**F08*| *F07*Deletes a file extension from current user's and local machine PATHEXTs.*-F*
         *F10*   *F08*         *F10*     *F08*|
-        *F10*/? *F08*(or)*F10* /Help    *F08*| *F07*Display this help.*-F*
-
+        *F10*/? *F08*(or)*F10* /Help    *F08*| *F07*Shows this help.*-F*
 
     *F11*[+]*-F* *F14*Switch value types*-F*
 
-        *F10* You can see all the entry index numbers typing:*-F* *F10*<%= processName %> /List*-F*
+        *F10*Note: You can list all the entry indices using command:*-F* *F10*<%= processName %> /List*-F*
 
-        *F10*/Del -Current*-F*    (*F07*Directory*-F*)
-        *F10*/Del -Current*-F*    (*F07*Entry Index*-F*)
+        *F10*/Del -User*-F*       (*F07*Directory Path*-F* or *F07*Entry Index*-F*)
+        *F10*/Del -Machine*-F*    (*F07*Directory Path*-F* or *F07*Entry Index*-F*)
 
-        *F10*/Del -Local*-F*      (*F07*Directory*-F*)
-        *F10*/Del -Local*-F*      (*F07*Entry Index*-F*)
+        *F10*/AddExt -User*-F*    (*F07*File Extension*-F*)
+        *F10*/AddExt -Machine*-F* (*F07*File Extension*-F*)
 
-        *F10*/AddExt -Current*-F* (*F07*File extension*-F*)
-        *F10*/AddExt -Local*-F*   (*F07*File extension*-F*)
-
-        *F10*/DelExt -Current*-F* (*F07*File extension*-F*)
-        *F10*/DelExt -Local*-F*   (*F07*File extension*-F*)
-    </SyntaxExtra>
+        *F10*/DelExt -User*-F*    (*F07*File Extension*-F*)
+        *F10*/DelExt -Machine*-F* (*F07*File Extension*-F*)</SyntaxExtra>
 
         <!-- Application Usage Examples -->
         <UsageExamples>
@@ -254,56 +237,55 @@ Namespace UserInterface
         *F08*(Lists the entries of PATH and PATHEXT)*-F*
 
         *F10*<%= processName %> /Clean*-F*
-        *F08*(Cleans duplicates and not found directories in PATH and PATHEXT)*-F*
+        *F08*(Clean duplicates and missing directory paths in PATH and PATHEXT)*-F*
 
         *F10*<%= processName %> /Restore*-F*
         *F08*(Restores the PATH and PATHEXT to Windows defaults)*-F*
 
         *F10*<%= processName %> /Export "C:\Registry File.reg"*-F*
-        *F08*(Exports the PATH and PATHEXT values to the target file)*-F*
+        *F08*(Exports the PATH and PATHEXT entries to the specified registry script file)*-F*
 
-        *F10*<%= processName %> /Add -Current "C:\Directory"*-F*
-        *F08*(Adds a new entry "C:\Directory" to Current User PATH)*-F*
+        *F10*<%= processName %> /Add -User "C:\Directory"*-F*
+        *F08*(Adds a directory with name "C:\Directory" to current user's PATH)*-F*
 
-        *F10*<%= processName %> /Add -Local "C:\Directory"*-F*
-        *F08*(Adds a new entry "C:\Directory" to All Users PATH)*-F*
+        *F10*<%= processName %> /Add -Machine "C:\Directory"*-F*
+        *F08*(Adds a directory with name "C:\Directory" to local machine PATH)*-F*
 
         *F10*<%= processName %> /Add "C:\Directory"*-F*
-        *F08*(Adds a new entry "C:\Directory" to both PATH's)*-F*
+        *F08*(Adds a directory with name "C:\Directory" to current user's and local machine PATHs)*-F*
 
-        *F10*<%= processName %> /Del -Current "C:\Directory"*-F*
-        *F08*(Deletes entries matching as "C:\Directory" from Current User PATH)*-F*
+        *F10*<%= processName %> /Del -User "C:\Directory"*-F*
+        *F08*(Deletes any directory with name "C:\Directory" from current user's PATH)*-F*
 
-        *F10*<%= processName %> /Del -Local "C:\Directory"*-F*
-        *F08*(Deletes entries matching as "C:\Directory" from All Users PATH)*-F*
+        *F10*<%= processName %> /Del -Machine "C:\Directory"*-F*
+        *F08*(Deletes any directory with name "C:\Directory" from local machine PATH)*-F*
 
         *F10*<%= processName %> /Del "C:\Directory"*-F*
-        *F08*(Deletes entries matching as "C:\Directory" from both PATH's)*-F*
+        *F08*(Deletes any directory with name "C:\Directory" from current user's and local machine PATHs)*-F*
 
-        *F10*<%= processName %> /Del -Current 5*-F*
-        *F08*(Deletes entry index 5 from Current User PATH)*-F*
+        *F10*<%= processName %> /Del -User 5*-F*
+        *F08*(Deletes the entry with index 5 from current user's PATH)*-F*
 
-        *F10*<%= processName %> /Del -Local 5*-F*
-        *F08*(Deletes the entry index 5 from All Users PATH)*-F*
+        *F10*<%= processName %> /Del -Machine 5*-F*
+        *F08*(Deletes the entry with index 5 from local machine PATH)*-F*
 
-        *F10*<%= processName %> /AddExt -Current ".hack"*-F*
-        *F08*(Adds a new ".hack" extension to Current User PATHEXT)*-F*
+        *F10*<%= processName %> /AddExt -User ".test"*-F*
+        *F08*(Adds a file extension with name ".test" to current user's PATHEXT)*-F*
 
-        *F10*<%= processName %> /AddExt -Local ".hack"*-F*
-        *F08*(Adds a new ".hack" extension to All Users PATHEXT)*-F*
+        *F10*<%= processName %> /AddExt -Machine ".test"*-F*
+        *F08*(Adds a file extension with name ".test" to local machine PATHEXT)*-F*
 
-        *F10*<%= processName %> /AddExt ".hack"*-F*
-        *F08*(Adds a new ".hack" extension to both PATHEXT's)*-F*
+        *F10*<%= processName %> /AddExt ".test"*-F*
+        *F08*(Adds a file extension with name ".test" to current user's and local machine PATHEXTs)*-F*
 
-        *F10*<%= processName %> /DelExt -Current ".hack"*-F*
-        *F08*(Deletes extensions matching as ".hack" from Current User PATHEXT)*-F*
+        *F10*<%= processName %> /DelExt -User ".test"*-F*
+        *F08*(Deletes any file extension with name ".test" from current user's PATHEXT)*-F*
 
-        *F10*<%= processName %> /DelExt -Local ".hack"*-F*
-        *F08*(Deletes extensions matching as ".hack" from All Users PATHEXT)*-F*
+        *F10*<%= processName %> /DelExt -Machine ".test"*-F*
+        *F08*(Deletes any file extension with name ".test" from local machine PATHEXT)*-F*
 
-        *F10*<%= processName %> /DelExt ".hack"*-F*
-        *F08*(Deletes extensions matching as ".hack" from both PATHEXT's)*-F*
-    </UsageExamples>
+        *F10*<%= processName %> /DelExt ".test"*-F*
+        *F08*(Deletes any file extension with name ".test" from current user's and local machine PATHEXTs)*-F*</UsageExamples>
 
     </Help>
 

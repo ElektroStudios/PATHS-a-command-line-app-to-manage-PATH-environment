@@ -37,9 +37,9 @@ Namespace Tools
         End Property
 
         ''' <summary>
-        ''' Gets the registry path of the Environment subkey for all users.
+        ''' Gets the registry path of the Environment subkey for local machine.
         ''' </summary>
-        ''' <value>The registry path of the Environment subkey for all users.</value>
+        ''' <value>The registry path of the Environment subkey for local machine.</value>
         Public Shared ReadOnly Property EnvironmentPathAllUsers As String
             Get
                 Return "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment"
@@ -107,7 +107,7 @@ Namespace Tools
             Current = 0
 
             ''' <summary>
-            ''' All users (HKLM).
+            ''' local machine (HKLM).
             ''' </summary>
             AllUsers = 1
 
@@ -191,7 +191,7 @@ Namespace Tools
                 Return path.Split({";"c}, StringSplitOptions.RemoveEmptyEntries)
 
             Else
-                Return {}
+                Return Enumerable.Empty(Of String)
 
             End If
 
@@ -233,7 +233,7 @@ Namespace Tools
                 Return pathExt.Split({";"c}, StringSplitOptions.RemoveEmptyEntries)
 
             Else
-                Return Nothing
+                Return Enumerable.Empty(Of String)
 
             End If
 
