@@ -28,14 +28,6 @@ windows-applications
 
 ![](Images/PATHS%2003.png)
 
-
-## 🎦 Videos
-
-<!-- Download a recorded video by clicking [here](/Video/video.mp4) -->
-
-<!-- See a recorded video by clicking on the following button:
-[![PATHS-a-command-line-app-to-manage-PATH-environment DEMO VIDEO](Images/demo_video.jpg)](https://www.youtube.com/watch?v=XXXXXXXXX)  -->
-
 ## 📝 Requirements
 
 - Microsoft Windows OS.
