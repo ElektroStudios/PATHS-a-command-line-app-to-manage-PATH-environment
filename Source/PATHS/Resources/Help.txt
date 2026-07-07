@@ -1,4 +1,4 @@
-:::::::::     ::: ::::::::::: :::    :::  ::::::::
+﻿:::::::::     ::: ::::::::::: :::    :::  ::::::::
 :+:    :+:  :+: :+:   :+:     :+:    :+: :+:    :+:
 +:+    +:+ +:+   +:+  +:+     +:+    +:+ +:+
 +#++:++#+ +#++:++#++: +#+     +#++:++#++ +#++:++#++
@@ -9,7 +9,7 @@
 
 ------------------------------------------------------>>>>
 Author   : ElektroStudios
-Copyright: Copyright � ElektroStudios 2015-2024
+Copyright: Copyright © ElektroStudios 2015-2024
 Website  : https://github.com/ElektroStudios/PATHS-a-command-line-app-to-manage-PATH-environment
 
 ------------------------------------------------------>>>>

@@ -1,4 +1,4 @@
-# PATHS Change Log 📋
+﻿# PATHS Change Log 📋
 
 ## v1.4 (2024) *(current)* 🆕
 #### 🌟 Improvements:
