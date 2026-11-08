@@ -160,10 +160,10 @@ Namespace UserInterface
         <Author>*F07*ElektroStudios*-F*</Author>
 
         <!-- Application version -->
-        <Version>*F07*1.4*-F*</Version>
+        <Version>*F07*1.5*-F*</Version>
 
         <!-- Copyright information -->
-        <Copyright>*F07*Copyright © ElektroStudios 2015-2024*-F*</Copyright>
+        <Copyright>*F07*Copyright © ElektroStudios 2015-2026*-F*</Copyright>
 
         <!-- Website information -->
         <Website>*F07*https://github.com/ElektroStudios/PATHS-a-command-line-app-to-manage-PATH-environment*-F*</Website>
@@ -176,7 +176,7 @@ Namespace UserInterface
     +#++:++#+ +#++:++#++: +#+     +#++:++#++ +#++:++#++ 
     +#+       +#+     +#+ +#+     +#+    +#+        +#+ 
     #+#       #+#     #+# #+#     #+#    #+# #+#    #+# 
-    ###       ###     ### ###     ###    ###  ########    *F07*v1.4
+    ###       ###     ### ###     ###    ###  ########    *F07*v1.5
     *-F*</Logo>
 
         <!-- Separator shape -->
@@ -198,7 +198,7 @@ Namespace UserInterface
         *F10*/C *F08*(or)*F10* /Clean   *F08*| *F07*Clean duplicates and missing directory paths in PATH and PATHEXT.*-F*
         *F10*/R *F08*(or)*F10* /Restore *F08*| *F07*Restores the PATH entries to Windows defaults.*-F*
         *F10*   *F08*         *F10*     *F08*|
-        *F10*/Add -User       *F08**F08**F08*| *F07*Adda a directory to current user's PATH.*-F*
+        *F10*/Add -User       *F08**F08**F08*| *F07*Adds a directory to current user's PATH.*-F*
         *F10*/Add -Machine    *F08**F08**F08*| *F07*Adds a directory to local machine PATH.*-F*
         *F10*/A *F08*(or)*F10* /Add     *F08*| *F07*Adds a directory to current user's and local machine PATHs.*-F*
         *F10*   *F08*         *F10*     *F08*|

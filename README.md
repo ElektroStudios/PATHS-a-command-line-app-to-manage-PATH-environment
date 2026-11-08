@@ -115,7 +115,7 @@ PATHS.exe /OPTIONS [DIRECTORY PATH | FILE EXTENSION | ENTRY INDEX]
 | `/A` (or) `/Add` | Both | Adds a directory to both PATHs. | `Directory Path` |
 | `/Del -User` | Current User | Deletes a directory from PATH. | `Directory Path` or `Entry Index` |
 | `/Del -Machine`| Local Machine | Deletes a directory from PATH. | `Directory Path` or `Entry Index` |
-| `/D` (or) `/Del` | Both | Deletes a directory from both PATHs. | `Directory Path` or `Entry Index` |
+| `/D` (or) `/Del` | Both | Deletes a directory from both PATHs. | `Directory Path` |
 
 ### 📄 PATHEXT Management
 
@@ -142,7 +142,7 @@ PATHS.exe /OPTIONS [DIRECTORY PATH | FILE EXTENSION | ENTRY INDEX]
 | `PATHS.exe /Del -User "C:\Directory"` | Deletes any directory named `C:\Directory` from current user's PATH. |
 | `PATHS.exe /Del -Machine "C:\Directory"` | Deletes any directory named `C:\Directory` from local machine PATH. |
 | `PATHS.exe /Del "C:\Directory"` | Deletes any directory named `C:\Directory` from current user's and local machine PATHs. |
-| `PATHS.exe /Del -User 5` | Deletes the entry with index `5` from current user's PATH. |
+| `PATHS.exe /Del -User 5` | Deletes the entry with index `5` (as shown by `/List`) from current user's PATH. |
 | `PATHS.exe /Del -Machine 5` | Deletes the entry with index `5` from local machine PATH. |
 | `PATHS.exe /AddExt -User ".test"` | Adds a file extension named `.test` to current user's PATHEXT. |
 | `PATHS.exe /AddExt -Machine ".test"` | Adds a file extension named `.test` to local machine PATHEXT. |

@@ -1,7 +1,7 @@
 ﻿' ***********************************************************************
 ' Author   : Elektro
 ' Assembly : PATHS
-' Modified : 09-April-2015
+' Modified : 08-November-2026
 ' ***********************************************************************
 ' <copyright file="Main.vb" company="Elektro Studios">
 '     Copyright (c) Elektro Studios. All rights reserved.
@@ -47,7 +47,17 @@ Namespace UserInterface
 
             ConsoleUtil.WriteColoredTextLine(HelpSection.ColorizedHelp.<Logo>.Value, {"*"c})
             ConsoleUtil.WriteColoredTextLine(HelpSection.ColorizedHelp.<Separator>.Value, {"*"c})
-            ParseArguments()
+
+            Try
+                ParseArguments()
+
+            Catch ex As Exception When TypeOf ex Is UnauthorizedAccessException OrElse
+                                       TypeOf ex Is Security.SecurityException
+                Console.WriteLine()
+                ConsoleUtil.WriteColoredTextLine(" *F12*[X] ERROR*F08*: *F07*Access denied. Administrator privileges are required to modify the local machine PATH or PATHEXT.*-F*", {"*"c})
+                Environment.Exit(1)
+
+            End Try
 
         End Sub
 
@@ -67,7 +77,7 @@ Namespace UserInterface
 
             Dim pathIndex As Integer = 0
 
-            ' Parsing of parametters without aditional values required
+            ' Parsing of parameters without additional values required
             Select Case My.Application.CommandLineArgs(0).ToLower
 
                 Case "/l", "/list" ' List
@@ -77,11 +87,11 @@ Namespace UserInterface
 
                 Case "/c", "/clean" ' Clean
                     Clean()
-                    Environment.Exit(0)
+                    ExitAfterModification()
 
                 Case "/r", "/restore" ' Restore
                     RestoreDefaults()
-                    Environment.Exit(0)
+                    ExitAfterModification()
 
                 Case "/?", "/help" ' Help
                     ShowHelp()
@@ -89,7 +99,7 @@ Namespace UserInterface
 
             End Select
 
-            ' Parsing of parametters with aditional values required
+            ' Parsing of parameters with additional values required
             For x As Integer = 0 To My.Application.CommandLineArgs.Count - 1
 
                 Select Case My.Application.CommandLineArgs(x).ToLower
@@ -137,7 +147,7 @@ Namespace UserInterface
 
                         End Select
 
-                        Environment.Exit(0)
+                        ExitAfterModification()
 
                     Case "/d", "/del" ' Delete
 
@@ -194,7 +204,7 @@ Namespace UserInterface
 
                         End Select
 
-                        Environment.Exit(0)
+                        ExitAfterModification()
 
                     Case "/e", "/export" ' Export
 
@@ -227,7 +237,7 @@ Namespace UserInterface
                                 If Not My.Application.CommandLineArgs.Count = x + 3 _
                                 OrElse My.Application.CommandLineArgs(x + 2) = String.Empty Then
 
-                                    DisplayError(2)
+                                    DisplayError(11)
 
                                 End If
 
@@ -239,7 +249,7 @@ Namespace UserInterface
                                 If Not My.Application.CommandLineArgs.Count = x + 3 _
                                 OrElse My.Application.CommandLineArgs(x + 2) = String.Empty Then
 
-                                    DisplayError(3)
+                                    DisplayError(12)
 
                                 End If
 
@@ -252,7 +262,7 @@ Namespace UserInterface
 
                         End Select
 
-                        Environment.Exit(0)
+                        ExitAfterModification()
 
                     Case "/delext" ' Delete extension from PATHEXT
 
@@ -297,13 +307,13 @@ Namespace UserInterface
 
                         End Select
 
-                        Environment.Exit(0)
+                        ExitAfterModification()
 
                 End Select
 
             Next x ' Argument
 
-            ShowHelp() ' Launch help 'cause the parametter can't be recognized
+            ShowHelp() ' Launch help 'cause the parameter can't be recognized
             Environment.Exit(1)
 
         End Sub
@@ -316,29 +326,9 @@ Namespace UserInterface
         ''' Adds a directory into the current user's PATH.
         ''' </summary>
         ''' <param name="directory">The directory.</param>
-        Private Sub AddDirectoryCurrentUser(ByVal directory As String)
+        Private Sub AddDirectoryCurrentUser(directory As String)
 
-            If Not PathUtil.PathExists(PathUtil.UserMode.Current) Then
-                PathUtil.CreatePath(PathUtil.UserMode.Current)
-            End If
-
-            Select Case PathUtil.ContainsDirectory(PathUtil.UserMode.Current, directory)
-
-                Case True
-                    Console.WriteLine()
-                    ConsoleUtil.WriteColoredTextLine(String.Format(" *F12*[X] ERROR*F08*: *F07*""{0}"" already exists in current user's PATH.*-F*", directory), {"*"c})
-
-                Case Else
-                    ConsoleUtil.WriteColoredTextLine(String.Format(" *F11*[i] *F07*Adding *F07*""{0}"" into current user's PATH...*-F*", directory), {"*"c})
-                    Try
-                        PathUtil.AddDirectory(PathUtil.UserMode.Current, directory)
-                        ConsoleUtil.WriteColoredTextLine(" *F11*[i] *F07*Directory successfully added into current user's PATH*-F*", {"*"c})
-                    Catch ex As System.ArgumentException
-                        ConsoleUtil.WriteColoredTextLine(" *F12*[X] ERROR*F08*: *F07*Directory contains invalid characters.*-F*", {"*"c})
-                    End Try
-                    Console.WriteLine()
-
-            End Select
+            AddDirectory(PathUtil.UserMode.Current, "current user's", directory)
 
         End Sub
 
@@ -346,28 +336,42 @@ Namespace UserInterface
         ''' Adds a directory into the local machine PATH.
         ''' </summary>
         ''' <param name="directory">The directory.</param>
-        Private Sub AddDirectoryAllUsers(ByVal directory As String)
+        Private Sub AddDirectoryAllUsers(directory As String)
 
-            If Not PathUtil.PathExists(PathUtil.UserMode.AllUsers) Then
-                PathUtil.CreatePath(PathUtil.UserMode.AllUsers)
+            AddDirectory(PathUtil.UserMode.AllUsers, "local machine", directory)
+
+        End Sub
+
+        ''' <summary>
+        ''' Adds a directory into the PATH of the specified user.
+        ''' </summary>
+        ''' <param name="userMode">The user mode.</param>
+        ''' <param name="target">The display name of the target PATH (e.g. "current user's").</param>
+        ''' <param name="directory">The directory.</param>
+        Private Sub AddDirectory(userMode As PathUtil.UserMode, target As String, directory As String)
+
+            If Not PathUtil.PathExists(userMode) Then
+                PathUtil.CreatePath(userMode)
             End If
 
-            Select Case PathUtil.ContainsDirectory(PathUtil.UserMode.AllUsers, directory)
+            Try
+                PathUtil.ValidateDirectory(directory)
 
-                Case True
-                    ConsoleUtil.WriteColoredTextLine(String.Format(" *F12*[X] ERROR*F08*: *F07*""{0}"" already exists in local machine PATH.*-F*", directory), {"*"c})
+            Catch ex As ArgumentException
+                ConsoleUtil.WriteColoredTextLine(" *F12*[X] ERROR*F08*: *F07*Directory contains invalid characters.*-F*", {"*"c})
+                Return
 
-                Case Else
-                    ConsoleUtil.WriteColoredTextLine(String.Format(" *F11*[i] *F07*Adding *F07*""{0}"" into local machine PATH...*-F*", directory), {"*"c})
-                    Try
-                        PathUtil.AddDirectory(PathUtil.UserMode.AllUsers, directory)
-                        ConsoleUtil.WriteColoredTextLine(" *F11*[i] *F07*Directory successfully added into local machine PATH*-F*", {"*"c})
-                    Catch ex As System.ArgumentException
-                        ConsoleUtil.WriteColoredTextLine(" *F12*[X] ERROR*F08*: *F07*Directory contains invalid characters.*-F*", {"*"c})
-                    End Try
-                    Console.WriteLine()
+            End Try
 
-            End Select
+            If PathUtil.ContainsDirectory(userMode, directory) Then
+                ConsoleUtil.WriteColoredTextLine($" *F12*[X] ERROR*F08*: *F07*""{directory}"" already exists in {target} PATH.*-F*", {"*"c})
+                Return
+            End If
+
+            ConsoleUtil.WriteColoredTextLine($" *F11*[i] *F07*Adding *F07*""{directory}"" into {target} PATH...*-F*", {"*"c})
+            PathUtil.AddDirectory(userMode, directory)
+            ConsoleUtil.WriteColoredTextLine($" *F11*[i] *F07*Directory successfully added into {target} PATH*-F*", {"*"c})
+            Console.WriteLine()
 
         End Sub
 
@@ -375,51 +379,19 @@ Namespace UserInterface
         ''' Deletes a directory from the current user's PATH.
         ''' </summary>
         ''' <param name="directory">The directory.</param>
-        Private Sub DeleteDirectoryCurrentUser(ByVal directory As String)
+        Private Sub DeleteDirectoryCurrentUser(directory As String)
 
-            If Not PathUtil.PathExists(PathUtil.UserMode.Current) Then
-                PathUtil.CreatePath(PathUtil.UserMode.Current)
-            End If
-
-            Select Case PathUtil.ContainsDirectory(PathUtil.UserMode.Current, directory)
-
-                Case False
-                    ConsoleUtil.WriteColoredTextLine(String.Format(" *F12*[X] ERROR*F08*: *F07*""{0}"" doesn't exists in current user's PATH.*-F*", directory), {"*"c})
-
-                Case Else
-                    ConsoleUtil.WriteColoredTextLine(String.Format(" *F11*[i] *F07*Deleting *F07*""{0}"" from current user's PATH...*-F*", directory), {"*"c})
-                    PathUtil.DeleteDirectory(PathUtil.UserMode.Current, directory)
-                    ConsoleUtil.WriteColoredTextLine(" *F11*[i] *F07*Directory successfully deleted from current user's PATH.*-F*", {"*"c})
-                    Console.WriteLine()
-
-            End Select
+            DeleteDirectory(PathUtil.UserMode.Current, "current user's", directory)
 
         End Sub
 
         ''' <summary>
         ''' Deletes a directory from the current user's PATH.
         ''' </summary>
-        ''' <param name="index">The directory index, 0 = First.</param>
-        Private Sub DeleteDirectoryCurrentUser(ByVal index As Integer)
+        ''' <param name="entryIndex">The one-based entry index, as shown by the /List switch (1 = First).</param>
+        Private Sub DeleteDirectoryCurrentUser(entryIndex As Integer)
 
-            If Not PathUtil.PathExists(PathUtil.UserMode.Current) Then
-                PathUtil.CreatePath(PathUtil.UserMode.Current)
-            End If
-
-            Dim dirs As IEnumerable(Of String) = PathUtil.GetPathDataList(PathUtil.UserMode.Current)
-
-            Select Case dirs.Count < (index + 1)
-
-                Case True
-                    ConsoleUtil.WriteColoredTextLine(String.Format(" *F12*[X] ERROR*F08*: *F07*Directory index *F06*{0} is out of range.*-F*", index), {"*"c})
-
-                Case Else
-                    ConsoleUtil.WriteColoredTextLine(String.Format(" *F11*[i] *F07*Deleting index *F07*""{0}"" from current user's PATH...*-F*", index), {"*"c})
-                    PathUtil.DeleteDirectory(PathUtil.UserMode.Current, index)
-                    ConsoleUtil.WriteColoredTextLine(" *F11*[i] *F07*Directory successfully deleted from current user's PATH.*-F*", {"*"c})
-                    Console.WriteLine()
-
-            End Select
+            DeleteDirectory(PathUtil.UserMode.Current, "current user's", entryIndex)
 
         End Sub
 
@@ -427,51 +399,69 @@ Namespace UserInterface
         ''' Deletes a directory from the local machine PATH.
         ''' </summary>
         ''' <param name="directory">The directory.</param>
-        Private Sub DeleteDirectoryAllUsers(ByVal directory As String)
+        Private Sub DeleteDirectoryAllUsers(directory As String)
 
-            If Not PathUtil.PathExists(PathUtil.UserMode.AllUsers) Then
-                PathUtil.CreatePath(PathUtil.UserMode.AllUsers)
-            End If
-
-            Select Case PathUtil.ContainsDirectory(PathUtil.UserMode.AllUsers, directory)
-
-                Case False
-                    ConsoleUtil.WriteColoredTextLine(String.Format(" *F12*[X] ERROR*F08*: *F07*""{0}"" doesn't exists in local machine PATH.*-F*", directory), {"*"c})
-
-                Case Else
-                    ConsoleUtil.WriteColoredTextLine(String.Format(" *F11*[i] *F07*Deleting *F07*""{0}"" from local machine PATH...*-F*", directory), {"*"c})
-                    PathUtil.DeleteDirectory(PathUtil.UserMode.AllUsers, directory)
-                    ConsoleUtil.WriteColoredTextLine(" *F11*[i] *F07*Directory successfully deleted from local machine PATH.*-F*", {"*"c})
-                    Console.WriteLine()
-
-            End Select
+            DeleteDirectory(PathUtil.UserMode.AllUsers, "local machine", directory)
 
         End Sub
 
         ''' <summary>
         ''' Deletes a directory from the local machine PATH.
         ''' </summary>
-        ''' <param name="index">The directory index, 0 = First.</param>
-        Private Sub DeleteDirectoryAllUsers(ByVal index As Integer)
+        ''' <param name="entryIndex">The one-based entry index, as shown by the /List switch (1 = First).</param>
+        Private Sub DeleteDirectoryAllUsers(entryIndex As Integer)
 
-            If Not PathUtil.PathExists(PathUtil.UserMode.AllUsers) Then
-                PathUtil.CreatePath(PathUtil.UserMode.AllUsers)
+            DeleteDirectory(PathUtil.UserMode.AllUsers, "local machine", entryIndex)
+
+        End Sub
+
+        ''' <summary>
+        ''' Deletes a directory from the PATH of the specified user.
+        ''' </summary>
+        ''' <param name="userMode">The user mode.</param>
+        ''' <param name="target">The display name of the target PATH (e.g. "current user's").</param>
+        ''' <param name="directory">The directory.</param>
+        Private Sub DeleteDirectory(userMode As PathUtil.UserMode, target As String, directory As String)
+
+            If Not PathUtil.PathExists(userMode) Then
+                PathUtil.CreatePath(userMode)
             End If
 
-            Dim dirs As IEnumerable(Of String) = PathUtil.GetPathDataList(PathUtil.UserMode.AllUsers)
+            If Not PathUtil.ContainsDirectory(userMode, directory) Then
+                ConsoleUtil.WriteColoredTextLine($" *F12*[X] ERROR*F08*: *F07*""{directory}"" doesn't exists in {target} PATH.*-F*", {"*"c})
+                Return
+            End If
 
-            Select Case dirs.Count < (index + 1)
+            ConsoleUtil.WriteColoredTextLine($" *F11*[i] *F07*Deleting *F07*""{directory}"" from {target} PATH...*-F*", {"*"c})
+            PathUtil.DeleteDirectory(userMode, directory)
+            ConsoleUtil.WriteColoredTextLine($" *F11*[i] *F07*Directory successfully deleted from {target} PATH.*-F*", {"*"c})
+            Console.WriteLine()
 
-                Case True
-                    ConsoleUtil.WriteColoredTextLine(String.Format(" *F12*[X] ERROR*F08*: *F07*Directory index *F06*{0} is out of range.*-F*", index), {"*"c})
+        End Sub
 
-                Case Else
-                    ConsoleUtil.WriteColoredTextLine(String.Format(" *F11*[i] *F07*Deleting index *F07*""{0}"" from local machine PATH...*-F*", index), {"*"c})
-                    PathUtil.DeleteDirectory(PathUtil.UserMode.AllUsers, index)
-                    ConsoleUtil.WriteColoredTextLine(" *F11*[i] *F07*Directory successfully deleted from local machine PATH.*-F*", {"*"c})
-                    Console.WriteLine()
+        ''' <summary>
+        ''' Deletes a directory from the PATH of the specified user.
+        ''' </summary>
+        ''' <param name="userMode">The user mode.</param>
+        ''' <param name="target">The display name of the target PATH (e.g. "current user's").</param>
+        ''' <param name="entryIndex">The one-based entry index, as shown by the /List switch (1 = First).</param>
+        Private Sub DeleteDirectory(userMode As PathUtil.UserMode, target As String, entryIndex As Integer)
 
-            End Select
+            If Not PathUtil.PathExists(userMode) Then
+                PathUtil.CreatePath(userMode)
+            End If
+
+            Dim count As Integer = PathUtil.GetPathDataList(userMode).Count()
+
+            If entryIndex < 1 OrElse entryIndex > count Then
+                ConsoleUtil.WriteColoredTextLine($" *F12*[X] ERROR*F08*: *F07*Directory index *F06*{entryIndex} *F07*is out of range (valid range: 1 to {count}).*-F*", {"*"c})
+                Return
+            End If
+
+            ConsoleUtil.WriteColoredTextLine($" *F11*[i] *F07*Deleting index *F07*""{entryIndex}"" from {target} PATH...*-F*", {"*"c})
+            PathUtil.DeleteDirectory(userMode, entryIndex - 1)
+            ConsoleUtil.WriteColoredTextLine($" *F11*[i] *F07*Directory successfully deleted from {target} PATH.*-F*", {"*"c})
+            Console.WriteLine()
 
         End Sub
 
@@ -479,10 +469,10 @@ Namespace UserInterface
         ''' Exports PATH and PATHEXT to the specified file path.
         ''' </summary>
         ''' <param name="filePath">The file path.</param>
-        Private Sub Export(ByVal filePath As String)
+        Private Sub Export(filePath As String)
 
-            If filePath.Any(Function(c As Char) IO.Path.GetInvalidPathChars.Contains(c)) Then
-                ConsoleUtil.WriteColoredTextLine(String.Format(" *F12*[X] ERROR*F08*: *F07*Cannot proceed because ""*F08*{0}*F07*"" contains invalid characters.*-F*", filePath), {"*"c})
+            If filePath.IndexOfAny(IO.Path.GetInvalidPathChars()) <> -1 Then
+                ConsoleUtil.WriteColoredTextLine($" *F12*[X] ERROR*F08*: *F07*Cannot proceed because ""*F08*{filePath}*F07*"" contains invalid characters.*-F*", {"*"c})
                 Environment.Exit(1)
             End If
 
@@ -496,53 +486,36 @@ Namespace UserInterface
         ''' </summary>
         Private Sub ListPath()
 
-            Dim dirsCurrentUser As IEnumerable(Of String) = PathUtil.GetPathDataList(PathUtil.UserMode.Current)
-            Dim dirsAllUsers As IEnumerable(Of String) = PathUtil.GetPathDataList(PathUtil.UserMode.AllUsers)
-            Dim dirIndex As Integer = 0
-
             If Console.ForegroundColor = ConsoleColor.Red Then
                 errorColor = ConsoleColor.Yellow
             End If
 
-            ConsoleUtil.WriteColoredTextLine(" *F11*[+] *F14*Current User's PATH*F08*:*-F*" & Environment.NewLine, {"*"c})
-
-            If dirsCurrentUser IsNot Nothing Then
-
-                For Each dir As String In dirsCurrentUser
-
-                    dirIndex += 1
-
-                    If IO.Directory.Exists(dir) Then
-                        ConsoleUtil.WriteColoredTextLine(String.Format("     *F06*{0} *F08*= *F07*{1}*-F*", dirIndex.ToString("00"), dir), {"*"c})
-                    Else
-                        ConsoleUtil.WriteColoredTextLine(String.Format("     *F06*{0} *F08*= *F08*{1}*-F*", dirIndex.ToString("00"), dir), {"*"c})
-
-                    End If
-
-                Next dir
-
-                dirIndex = 0
-
-            End If
+            ConsoleUtil.WriteColoredTextLine($" *F11*[+] *F14*Current User's PATH*F08*:*-F*{Environment.NewLine}", {"*"c})
+            ListDirectories(PathUtil.GetPathDataList(PathUtil.UserMode.Current))
 
             Console.WriteLine()
-            ConsoleUtil.WriteColoredTextLine(" *F11*[+] *F14*Local Machine PATH*F08*:*-F*" & Environment.NewLine, {"*"c})
+            ConsoleUtil.WriteColoredTextLine($" *F11*[+] *F14*Local Machine PATH*F08*:*-F*{Environment.NewLine}", {"*"c})
+            ListDirectories(PathUtil.GetPathDataList(PathUtil.UserMode.AllUsers))
 
-            If dirsAllUsers IsNot Nothing Then
+        End Sub
 
-                For Each dir As String In dirsAllUsers
+        ''' <summary>
+        ''' Lists the specified PATH entries with their one-based index.
+        ''' <para></para>
+        ''' Entries of directories that does not exist are printed with a dimmed color.
+        ''' </summary>
+        ''' <param name="dirs">The PATH entries.</param>
+        Private Sub ListDirectories(dirs As IEnumerable(Of String))
 
-                    dirIndex += 1
+            Dim dirIndex As Integer = 0
 
-                    If IO.Directory.Exists(dir) Then
-                        ConsoleUtil.WriteColoredTextLine(String.Format("     *F06*{0} *F08*= *F07*{1}*-F*", dirIndex.ToString("00"), dir), {"*"c})
-                    Else
-                        ConsoleUtil.WriteColoredTextLine(String.Format("     *F06*{0} *F08*= *F08*{1}*-F*", dirIndex.ToString("00"), dir), {"*"c})
-                    End If
+            For Each dir As String In dirs
+                dirIndex += 1
 
-                Next dir
-
-            End If
+                Dim exists As Boolean = IO.Directory.Exists(Environment.ExpandEnvironmentVariables(dir).Trim(""""c))
+                Dim color As String = If(exists, "F07", "F08")
+                ConsoleUtil.WriteColoredTextLine($"     *F06*{dirIndex:00} *F08*= *{color}*{dir}*-F*", {"*"c})
+            Next dir
 
         End Sub
 
@@ -551,110 +524,85 @@ Namespace UserInterface
         ''' </summary>
         Private Sub Clean()
 
-            Dim dirNotfoundtCurrentUserCount As Integer = 0
-            Dim dirNotfoundAllUsersCount As Integer = 0
+            Dim existsFunc As Func(Of String, Boolean) = AddressOf IO.Directory.Exists
 
-            Dim dirDupCurrentUserCount As Integer = 0
-            Dim dirDupAllUsersCount As Integer = 0
-            Dim extDupCurrentUserCount As Integer = 0
-            Dim extDupAllUsersCount As Integer = 0
-
-            Dim dirsCurrentPath As List(Of String) =
-                PathUtil.GetPathDataList(PathUtil.UserMode.Current).
-                Distinct(StringComparer.OrdinalIgnoreCase).
-                OrderBy(Function(dir As String) dir).
-                ToList()
-
-            Dim dirsAllUsersPath As List(Of String) =
-                PathUtil.GetPathDataList(PathUtil.UserMode.AllUsers).
-                Distinct(StringComparer.OrdinalIgnoreCase).
-                OrderBy(Function(dir As String) dir).
-                ToList()
-
-            Dim extsCurrentPath As List(Of String) =
-                PathUtil.GetPathExtDataList(PathUtil.UserMode.Current).
-                Distinct(StringComparer.OrdinalIgnoreCase).
-                OrderBy(Function(ext As String) ext).
-                ToList()
-
-            Dim extsAllUsersPath As List(Of String) =
-                PathUtil.GetPathExtDataList(PathUtil.UserMode.AllUsers).
-                Distinct(StringComparer.OrdinalIgnoreCase).
-                OrderBy(Function(ext As String) ext).
-                ToList()
-
-            ' *****************
+            ' *******************
             ' current user's PATH
-            ' *****************
+            ' *******************
             Console.WriteLine()
-            ConsoleUtil.WriteColoredTextLine(" *F11*[i] *F07*Processing current user's PATH*F08*...*-F*" & Environment.NewLine, {"*"c})
+            ConsoleUtil.WriteColoredTextLine($" *F11*[i] *F07*Processing current user's PATH*F08*...*-F*{Environment.NewLine}", {"*"c})
+            Dim pathCurrentUser As PathUtil.CleanResult =
+                PathUtil.CleanDirectoryEntries(PathUtil.GetPathDataList(PathUtil.UserMode.Current), existsFunc)
+            PrintMissingDirectories(pathCurrentUser)
 
-            dirDupCurrentUserCount = (PathUtil.GetPathDataList(PathUtil.UserMode.Current).Count - dirsCurrentPath.Count)
-
-            For Each dir As String In dirsCurrentPath.ToArray
-
-                If Not IO.Directory.Exists(dir) Then
-                    dirsCurrentPath.Remove(dir)
-                    dirNotfoundtCurrentUserCount += 1
-                    ConsoleUtil.WriteColoredTextLine(String.Format(" *F07*Missing Directory Deleted: *F08*""*F06*{0}*F08*""*F07*.*-F*", dir), {"*"c})
-                End If
-
-            Next dir
-
-            ' **************
+            ' ******************
             ' local machine PATH
-            ' **************
+            ' ******************
             Console.WriteLine()
-            ConsoleUtil.WriteColoredTextLine(" *F11*[i] *F07*Processing local machine PATH*F08*...*-F*" & Environment.NewLine, {"*"c})
-            dirDupAllUsersCount += (PathUtil.GetPathDataList(PathUtil.UserMode.AllUsers).Count - dirsAllUsersPath.Count)
+            ConsoleUtil.WriteColoredTextLine($" *F11*[i] *F07*Processing local machine PATH*F08*...*-F*{Environment.NewLine}", {"*"c})
+            Dim pathAllUsers As PathUtil.CleanResult =
+                PathUtil.CleanDirectoryEntries(PathUtil.GetPathDataList(PathUtil.UserMode.AllUsers), existsFunc)
+            PrintMissingDirectories(pathAllUsers)
 
-            For Each dir As String In dirsAllUsersPath.ToArray
-
-                If Not IO.Directory.Exists(dir) Then
-                    dirsAllUsersPath.Remove(dir)
-                    dirNotfoundAllUsersCount += 1
-                    ConsoleUtil.WriteColoredTextLine(String.Format(" *F07*Missing Directory Deleted: *F08*""*F06*{0}*F08*""*F07*.*-F*", dir), {"*"c})
-                End If
-
-            Next dir
-
-            ' ********************
+            ' **********************
             ' current user's PATHEXT
-            ' ********************
+            ' **********************
             Console.WriteLine()
-            ConsoleUtil.WriteColoredTextLine(" *F11*[i] *F07*Processing current user's PATHEXT*F08*...*-F*" & Environment.NewLine, {"*"c})
+            ConsoleUtil.WriteColoredTextLine($" *F11*[i] *F07*Processing current user's PATHEXT*F08*...*-F*{Environment.NewLine}", {"*"c})
+            Dim pathExtCurrentUser As PathUtil.CleanResult =
+                PathUtil.CleanExtensionEntries(PathUtil.GetPathExtDataList(PathUtil.UserMode.Current))
 
-            extDupCurrentUserCount += (PathUtil.GetPathExtDataList(PathUtil.UserMode.Current).Count - extsCurrentPath.Count)
-
-            ' *****************
+            ' *********************
             ' local machine PATHEXT
-            ' *****************
+            ' *********************
             Console.WriteLine()
-            ConsoleUtil.WriteColoredTextLine(" *F11*[i] *F07*Processing local machine PATHEXT*F08*...*-F*" & Environment.NewLine, {"*"c})
-            extDupAllUsersCount += (PathUtil.GetPathExtDataList(PathUtil.UserMode.AllUsers).Count - extsAllUsersPath.Count)
+            ConsoleUtil.WriteColoredTextLine($" *F11*[i] *F07*Processing local machine PATHEXT*F08*...*-F*{Environment.NewLine}", {"*"c})
+            Dim pathExtAllUsers As PathUtil.CleanResult =
+                PathUtil.CleanExtensionEntries(PathUtil.GetPathExtDataList(PathUtil.UserMode.AllUsers))
 
             ' ***************
-            ' UPDAtE REGISTRY
+            ' UPDATE REGISTRY
             ' ***************
-            PathUtil.CreatePath(PathUtil.UserMode.Current, String.Join(";"c, dirsCurrentPath))
-            PathUtil.CreatePath(PathUtil.UserMode.AllUsers, String.Join(";"c, dirsAllUsersPath))
-            PathUtil.CreatePathExt(PathUtil.UserMode.Current, String.Join(";"c, extsCurrentPath))
-            PathUtil.CreatePathExt(PathUtil.UserMode.AllUsers, String.Join(";"c, extsAllUsersPath))
+            ' Only the values that exist are rewritten, to avoid creating empty values.
+            If PathUtil.PathExists(PathUtil.UserMode.Current) Then
+                PathUtil.CreatePath(PathUtil.UserMode.Current, PathUtil.JoinEntries(pathCurrentUser.Entries))
+            End If
+            If PathUtil.PathExists(PathUtil.UserMode.AllUsers) Then
+                PathUtil.CreatePath(PathUtil.UserMode.AllUsers, PathUtil.JoinEntries(pathAllUsers.Entries))
+            End If
+            If PathUtil.PathExtExists(PathUtil.UserMode.Current) Then
+                PathUtil.CreatePathExt(PathUtil.UserMode.Current, PathUtil.JoinEntries(pathExtCurrentUser.Entries))
+            End If
+            If PathUtil.PathExtExists(PathUtil.UserMode.AllUsers) Then
+                PathUtil.CreatePathExt(PathUtil.UserMode.AllUsers, PathUtil.JoinEntries(pathExtAllUsers.Entries))
+            End If
 
             ' ******
             ' REPORT
             ' ******
             Console.WriteLine()
-            ConsoleUtil.WriteColoredTextLine(String.Format(" *F11*[i] *F07*Removed *F06*{0} *F07*not found directories  in current user's PATH.", dirNotfoundtCurrentUserCount.ToString("00")), {"*"c})
-            ConsoleUtil.WriteColoredTextLine(String.Format(" *F11*[i] *F07*Removed *F06*{0} *F07*not found directories  in local machine  PATH.", dirNotfoundAllUsersCount.ToString("00")), {"*"c})
+            ConsoleUtil.WriteColoredTextLine($" *F11*[i] *F07*Removed *F06*{pathCurrentUser.RemovedMissing.Count:00} *F07*not found directories  in current user's PATH.", {"*"c})
+            ConsoleUtil.WriteColoredTextLine($" *F11*[i] *F07*Removed *F06*{pathAllUsers.RemovedMissing.Count:00} *F07*not found directories  in local machine  PATH.", {"*"c})
             Console.WriteLine()
-            ConsoleUtil.WriteColoredTextLine(String.Format(" *F11*[i] *F07*Removed *F06*{0} *F07*duplicated directories in current user's PATH.", dirDupCurrentUserCount.ToString("00")), {"*"c})
-            ConsoleUtil.WriteColoredTextLine(String.Format(" *F11*[i] *F07*Removed *F06*{0} *F07*duplicated directories in local machine  PATH.", dirDupAllUsersCount.ToString("00")), {"*"c})
+            ConsoleUtil.WriteColoredTextLine($" *F11*[i] *F07*Removed *F06*{pathCurrentUser.RemovedDuplicates.Count:00} *F07*duplicated directories in current user's PATH.", {"*"c})
+            ConsoleUtil.WriteColoredTextLine($" *F11*[i] *F07*Removed *F06*{pathAllUsers.RemovedDuplicates.Count:00} *F07*duplicated directories in local machine  PATH.", {"*"c})
             Console.WriteLine()
-            ConsoleUtil.WriteColoredTextLine(String.Format(" *F11*[i] *F07*Removed *F06*{0} *F07*duplicated extensions  in current user's PATHEXT.", extDupCurrentUserCount.ToString("00")), {"*"c})
-            ConsoleUtil.WriteColoredTextLine(String.Format(" *F11*[i] *F07*Removed *F06*{0} *F07*duplicated extensions  in local machine  PATHEXT", extDupAllUsersCount.ToString("00")), {"*"c})
+            ConsoleUtil.WriteColoredTextLine($" *F11*[i] *F07*Removed *F06*{pathExtCurrentUser.RemovedDuplicates.Count:00} *F07*duplicated extensions  in current user's PATHEXT.", {"*"c})
+            ConsoleUtil.WriteColoredTextLine($" *F11*[i] *F07*Removed *F06*{pathExtAllUsers.RemovedDuplicates.Count:00} *F07*duplicated extensions  in local machine  PATHEXT.", {"*"c})
             Console.WriteLine()
             ConsoleUtil.WriteColoredTextLine(" *F11*[+] *F07*PATH and PATHEXT were successfully cleaned.*-F*", {"*"c})
+
+        End Sub
+
+        ''' <summary>
+        ''' Prints the missing directories that were removed by a clean operation.
+        ''' </summary>
+        ''' <param name="result">The clean result.</param>
+        Private Sub PrintMissingDirectories(result As PathUtil.CleanResult)
+
+            For Each dir As String In result.RemovedMissing
+                ConsoleUtil.WriteColoredTextLine($" *F07*Missing Directory Deleted: *F08*""*F06*{dir}*F08*""*F07*.*-F*", {"*"c})
+            Next dir
 
         End Sub
 
@@ -669,7 +617,7 @@ Namespace UserInterface
             PathUtil.CreatePathExt(PathUtil.UserMode.Current, PathUtil.DefaultPathExtData)
             PathUtil.CreatePathExt(PathUtil.UserMode.AllUsers, PathUtil.DefaultPathExtData)
 
-            Console.WriteLine(" [+] PATH and PATHEXT were successfully restored to defaults.")
+            ConsoleUtil.WriteColoredTextLine(" *F11*[+] *F07*PATH and PATHEXT were successfully restored to defaults.*-F*", {"*"c})
 
         End Sub
 
@@ -681,24 +629,9 @@ Namespace UserInterface
         ''' Adds a file extension into the current user's PATHEXT.
         ''' </summary>
         ''' <param name="ext">The file extension.</param>
-        Private Sub AddExtensionCurrentUser(ByVal ext As String)
+        Private Sub AddExtensionCurrentUser(ext As String)
 
-            If Not PathUtil.PathExtExists(PathUtil.UserMode.Current) Then
-                PathUtil.CreatePathExt(PathUtil.UserMode.Current)
-            End If
-
-            Select Case PathUtil.ContainsExtension(PathUtil.UserMode.Current, ext)
-
-                Case True
-                    ConsoleUtil.WriteColoredTextLine(String.Format(" *F12*[X] ERROR*F08*: *F07*""{0}"" already exists in current user's PATHEXT.*-F*", ext), {"*"c})
-
-                Case Else
-                    ConsoleUtil.WriteColoredTextLine(String.Format(" *F11*[i] *F07*Adding *F07*""{0}"" into current user's PATHEXT...*-F*", ext), {"*"c})
-                    PathUtil.AddExtension(PathUtil.UserMode.Current, ext)
-                    ConsoleUtil.WriteColoredTextLine(" *F11*[i] *F07*File extension successfully added into current user's PATHEXT*-F*", {"*"c})
-                    Console.WriteLine()
-
-            End Select
+            AddExtension(PathUtil.UserMode.Current, "current user's", ext)
 
         End Sub
 
@@ -706,24 +639,43 @@ Namespace UserInterface
         ''' Adds a file extension into the local machine PATHEXT.
         ''' </summary>
         ''' <param name="ext">The file extension.</param>
-        Private Sub AddExtensionAllUsers(ByVal ext As String)
+        Private Sub AddExtensionAllUsers(ext As String)
 
-            If Not PathUtil.PathExtExists(PathUtil.UserMode.AllUsers) Then
-                PathUtil.CreatePathExt(PathUtil.UserMode.AllUsers)
+            AddExtension(PathUtil.UserMode.AllUsers, "local machine", ext)
+
+        End Sub
+
+        ''' <summary>
+        ''' Adds a file extension into the PATHEXT of the specified user.
+        ''' </summary>
+        ''' <param name="userMode">The user mode.</param>
+        ''' <param name="target">The display name of the target PATHEXT (e.g. "current user's").</param>
+        ''' <param name="ext">The file extension.</param>
+        Private Sub AddExtension(userMode As PathUtil.UserMode, target As String, ext As String)
+
+            If Not PathUtil.PathExtExists(userMode) Then
+                PathUtil.CreatePathExt(userMode)
             End If
 
-            Select Case PathUtil.ContainsExtension(PathUtil.UserMode.AllUsers, ext)
+            Dim normalized As String
+            Try
+                normalized = PathUtil.NormalizeExtension(ext)
 
-                Case True
-                    ConsoleUtil.WriteColoredTextLine(String.Format(" *F12*[X] ERROR*F08*: *F07*""{0}"" already exists in local machine PATHEXT.*-F*", ext), {"*"c})
+            Catch ex As ArgumentException
+                ConsoleUtil.WriteColoredTextLine($" *F12*[X] ERROR*F08*: *F07*""{ext}"" is not a valid file extension.*-F*", {"*"c})
+                Return
 
-                Case Else
-                    ConsoleUtil.WriteColoredTextLine(String.Format(" *F11*[i] *F07*Adding *F07*""{0}"" into local machine PATHEXT...*-F*", ext), {"*"c})
-                    PathUtil.AddExtension(PathUtil.UserMode.AllUsers, ext)
-                    ConsoleUtil.WriteColoredTextLine(" *F11*[i] *F07*File extension successfully added into local machine PATHEXT*-F*", {"*"c})
-                    Console.WriteLine()
+            End Try
 
-            End Select
+            If PathUtil.ContainsExtension(userMode, normalized) Then
+                ConsoleUtil.WriteColoredTextLine($" *F12*[X] ERROR*F08*: *F07*""{normalized}"" already exists in {target} PATHEXT.*-F*", {"*"c})
+                Return
+            End If
+
+            ConsoleUtil.WriteColoredTextLine($" *F11*[i] *F07*Adding *F07*""{normalized}"" into {target} PATHEXT...*-F*", {"*"c})
+            PathUtil.AddExtension(userMode, normalized)
+            ConsoleUtil.WriteColoredTextLine($" *F11*[i] *F07*File extension successfully added into {target} PATHEXT*-F*", {"*"c})
+            Console.WriteLine()
 
         End Sub
 
@@ -731,24 +683,9 @@ Namespace UserInterface
         ''' Deletes a file extension from the current user's PATHEXT.
         ''' </summary>
         ''' <param name="ext">The file extension.</param>
-        Private Sub DeleteExtensionCurrentUser(ByVal ext As String)
+        Private Sub DeleteExtensionCurrentUser(ext As String)
 
-            If Not PathUtil.PathExtExists(PathUtil.UserMode.Current) Then
-                PathUtil.CreatePathExt(PathUtil.UserMode.Current)
-            End If
-
-            Select Case PathUtil.ContainsExtension(PathUtil.UserMode.Current, ext)
-
-                Case False
-                    ConsoleUtil.WriteColoredTextLine(String.Format(" *F12*[X] ERROR*F08*: *F07*""{0}"" doesn't exists in current user's PATHEXT.*-F*", ext), {"*"c})
-
-                Case Else
-                    ConsoleUtil.WriteColoredTextLine(String.Format(" *F11*[i] *F07*Deleting *F07*""{0}"" from current user's PATHEXT...*-F*", ext), {"*"c})
-                    PathUtil.DeleteExtension(PathUtil.UserMode.Current, ext)
-                    ConsoleUtil.WriteColoredTextLine(" *F11*[i] *F07*File extension successfully deleted from current user's PATHEXT*-F*", {"*"c})
-                    Console.WriteLine()
-
-            End Select
+            DeleteExtension(PathUtil.UserMode.Current, "current user's", ext)
 
         End Sub
 
@@ -756,24 +693,33 @@ Namespace UserInterface
         ''' Deletes a file extension from the local machine PATHEXT.
         ''' </summary>
         ''' <param name="ext">The file extension.</param>
-        Private Sub DeleteExtensionAllUsers(ByVal ext As String)
+        Private Sub DeleteExtensionAllUsers(ext As String)
 
-            If Not PathUtil.PathExtExists(PathUtil.UserMode.AllUsers) Then
-                PathUtil.CreatePathExt(PathUtil.UserMode.AllUsers)
+            DeleteExtension(PathUtil.UserMode.AllUsers, "local machine", ext)
+
+        End Sub
+
+        ''' <summary>
+        ''' Deletes a file extension from the PATHEXT of the specified user.
+        ''' </summary>
+        ''' <param name="userMode">The user mode.</param>
+        ''' <param name="target">The display name of the target PATHEXT (e.g. "current user's").</param>
+        ''' <param name="ext">The file extension.</param>
+        Private Sub DeleteExtension(userMode As PathUtil.UserMode, target As String, ext As String)
+
+            If Not PathUtil.PathExtExists(userMode) Then
+                PathUtil.CreatePathExt(userMode)
             End If
 
-            Select Case PathUtil.ContainsExtension(PathUtil.UserMode.AllUsers, ext)
+            If Not PathUtil.ContainsExtension(userMode, ext) Then
+                ConsoleUtil.WriteColoredTextLine($" *F12*[X] ERROR*F08*: *F07*""{ext}"" doesn't exists in {target} PATHEXT.*-F*", {"*"c})
+                Return
+            End If
 
-                Case False
-                    ConsoleUtil.WriteColoredTextLine(String.Format(" *F12*[X] ERROR*F08*: *F07*""{0}"" doesn't exists in local machine PATHEXT.*-F*", ext), {"*"c})
-
-                Case Else
-                    ConsoleUtil.WriteColoredTextLine(String.Format(" *F11*[i] *F07*Deleting *F07*""{0}"" from local machine PATHEXT...*-F*", ext), {"*"c})
-                    PathUtil.DeleteExtension(PathUtil.UserMode.AllUsers, ext)
-                    ConsoleUtil.WriteColoredTextLine(" *F11*[i] *F07*File extension successfully deleted from local machine PATHEXT*-F*", {"*"c})
-                    Console.WriteLine()
-
-            End Select
+            ConsoleUtil.WriteColoredTextLine($" *F11*[i] *F07*Deleting *F07*""{ext}"" from {target} PATHEXT...*-F*", {"*"c})
+            PathUtil.DeleteExtension(userMode, ext)
+            ConsoleUtil.WriteColoredTextLine($" *F11*[i] *F07*File extension successfully deleted from {target} PATHEXT*-F*", {"*"c})
+            Console.WriteLine()
 
         End Sub
 
@@ -782,34 +728,28 @@ Namespace UserInterface
         ''' </summary>
         Private Sub ListPathext()
 
-            Dim pathExtCurrentUser As IEnumerable(Of String) = PathUtil.GetPathExtDataList(PathUtil.UserMode.Current)
-            Dim pathExtAllUsers As IEnumerable(Of String) = PathUtil.GetPathExtDataList(PathUtil.UserMode.AllUsers)
+            Console.WriteLine()
+            ConsoleUtil.WriteColoredTextLine($" *F11*[+] *F14*Current User's PATHEXT*F08*:*-F*{Environment.NewLine}", {"*"c})
+            ListExtensions(PathUtil.GetPathExtDataList(PathUtil.UserMode.Current))
+
+            Console.WriteLine()
+            ConsoleUtil.WriteColoredTextLine($" *F11*[+] *F14*Local Machine PATHEXT*F08*:*-F*{Environment.NewLine}", {"*"c})
+            ListExtensions(PathUtil.GetPathExtDataList(PathUtil.UserMode.AllUsers))
+
+        End Sub
+
+        ''' <summary>
+        ''' Lists the specified PATHEXT entries with their one-based index.
+        ''' </summary>
+        ''' <param name="exts">The PATHEXT entries.</param>
+        Private Sub ListExtensions(exts As IEnumerable(Of String))
+
             Dim extIndex As Integer = 0
 
-            Console.WriteLine()
-            ConsoleUtil.WriteColoredTextLine(" *F11*[+] *F14*Current User's PATHEXT*F08*:*-F*" & Environment.NewLine, {"*"c})
-
-            If pathExtCurrentUser IsNot Nothing Then
-
-                For Each ext As String In pathExtCurrentUser
-                    extIndex += 1
-                    ConsoleUtil.WriteColoredTextLine(String.Format("     *F06*{0} *F08*= *F07*{1}*-F*", extIndex.ToString("00"), ext), {"*"c})
-                Next ext
-                extIndex = 0
-
-            End If
-
-            Console.WriteLine()
-            ConsoleUtil.WriteColoredTextLine(" *F11*[+] *F14*Local Machine PATHEXT*F08*:*-F*" & Environment.NewLine, {"*"c})
-
-            If pathExtAllUsers IsNot Nothing Then
-
-                For Each ext As String In pathExtAllUsers
-                    extIndex += 1
-                    ConsoleUtil.WriteColoredTextLine(String.Format("     *F06*{0} *F08*= *F07*{1}*-F*", extIndex.ToString("00"), ext), {"*"c})
-                Next ext
-
-            End If
+            For Each ext As String In exts
+                extIndex += 1
+                ConsoleUtil.WriteColoredTextLine($"     *F06*{extIndex:00} *F08*= *F07*{ext}*-F*", {"*"c})
+            Next ext
 
         End Sub
 
@@ -821,7 +761,7 @@ Namespace UserInterface
         ''' Shows the specified program error.
         ''' </summary>
         ''' <param name="errorIndex">error Index.</param>
-        Private Sub DisplayError(ByVal errorIndex As Integer)
+        Private Sub DisplayError(errorIndex As Integer)
 
             Select Case errorIndex
 
@@ -846,7 +786,7 @@ Namespace UserInterface
                     Console.WriteLine(" [i] EXAMPLE: PATHS.exe /del ""C:\Directory""")
 
                 Case 5 ' /Del (Integer)
-                    Console.WriteLine(" [X] ERROR: Deletion by Entry Index is only allowed with -user and -machine parametters.")
+                    Console.WriteLine(" [X] ERROR: Deletion by Entry Index is only allowed with -user and -machine parameters.")
                     Console.WriteLine()
                     Console.WriteLine(" [i] EXAMPLE: PATHS.exe /del -user 5")
                     Console.WriteLine(" [i] EXAMPLE: PATHS.exe /del -machine 5")
@@ -897,13 +837,21 @@ Namespace UserInterface
                     Console.WriteLine(" [i] EXAMPLE: PATHS.exe /DelExt -machine "".RB""")
 
                 Case Else
-
-                    MsgBox("[ DEBUG ] Error de syntaxis al parsear parámetro: ""ErrorIndex""")
-                    Threading.Thread.Sleep(60)
+                    Throw New ArgumentOutOfRangeException(NameOf(errorIndex), errorIndex, "Unexpected error index.")
 
             End Select
 
             Environment.Exit(1)
+
+        End Sub
+
+        ''' <summary>
+        ''' Notifies the system about the environment changes, and terminates the process with exit code 0.
+        ''' </summary>
+        Private Sub ExitAfterModification()
+
+            PathUtil.NotifyEnvironmentChanged()
+            Environment.Exit(0)
 
         End Sub
 

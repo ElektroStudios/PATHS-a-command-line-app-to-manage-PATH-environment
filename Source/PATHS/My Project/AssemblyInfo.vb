@@ -2,6 +2,7 @@
 
 Imports System
 Imports System.Reflection
+Imports System.Runtime.CompilerServices
 Imports System.Runtime.InteropServices
 
 ' General Information about an assembly is controlled through the following 
@@ -14,7 +15,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyDescription("Command-line app to manage PATH and PATHEXT environment variables")>
 <Assembly: AssemblyCompany("ElektroStudios")>
 <Assembly: AssemblyProduct("PATHS")>
-<Assembly: AssemblyCopyright("Copyright © ElektroStudios 2014-2024")>
+<Assembly: AssemblyCopyright("Copyright © ElektroStudios 2014-2026")>
 <Assembly: AssemblyTrademark("")> 
 
 <Assembly: ComVisible(False)> 
@@ -33,7 +34,9 @@ Imports System.Runtime.InteropServices
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("1.4.0.0")>
-<Assembly: AssemblyFileVersion("1.4.0.0")>
+<Assembly: AssemblyVersion("1.5.0.0")>
+<Assembly: AssemblyFileVersion("1.5.0.0")>
 
-<Assembly: NeutralResourcesLanguageAttribute("en")> 
+<Assembly: NeutralResourcesLanguageAttribute("en")>
+
+<Assembly: InternalsVisibleTo("PATHS.Tests")> 
